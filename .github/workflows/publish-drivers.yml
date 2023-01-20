@@ -63,7 +63,7 @@ jobs:
     needs: build-matrix
     if: needs.parse-changes.outputs.drivers != '[]'
     strategy:
-      matrix: ${{fromJson(needs.build-matrix.outputs.drivers)}
+      matrix: ${{ fromJson(needs.build-matrix.outputs.drivers) }}
     runs-on: ubuntu-latest
     steps:
       - name: "Publish Driver"
