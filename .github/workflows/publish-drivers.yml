@@ -46,7 +46,6 @@ jobs:
     needs: parse-changes
     if: needs.parse-changes.outputs.drivers != '[]'
     uses: ./.github/workflows/build-matrix.yml
-    id: set-matrix
     with:
       # inputFile: '.github/workflows/matrix_includes.json' # Default input file path
       filter: 'drivers[?contains(${{ needs.parse-changes.outputs.drivers }}, driver)]'
