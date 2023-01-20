@@ -1,0 +1,34 @@
+name: Build Workflow Matrix
+
+on:
+  workflow_call:
+    inputs:
+      inputFile:
+        description: "The file that contains the JSON configuration of the matrix includes elements. Must come after a Checkout."
+        required: false
+        type: string
+        default: ".github/workflows/matrix_includes.json"
+      filter:
+        description: "The JMESPath JSON query to apply to the input file."
+        required: true
+        type: string
+      addInclude:
+        description: "Wrap the output from the JSON query in an {include: ...} object."
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      # Required as the JSON input file needs to be read
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        uses: JoshuaTheMiller/conditional-build-matrix@main        
+        with:          
+          inputFile: ${{ inputs.inputFile }}
+          filter: ${{ inputs.filter || ".github/workflows/matrix_includes.json" }}
+          addInclude: ${{ inputs.addInclude || true }}

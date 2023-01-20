@@ -4,19 +4,19 @@ on:
   push:
     branches:
       - main
-      - beta
+#      - beta
     paths:
       - "drivers/**.yaml"
       - "drivers/**.yml"
       - "drivers/**.lua"
-  pull_request:
-    branches:
-      - main
-      - beta
-    paths:
-      - "drivers/**.yaml"
-      - "drivers/**.yml"
-      - "drivers/**.lua"
+#  pull_request:
+#    branches:
+#      - main
+#      - beta
+#    paths:
+#      - "drivers/**.yaml"
+#      - "drivers/**.yml"
+#      - "drivers/**.lua"
 
 jobs:
   paths-filter:
@@ -39,23 +39,21 @@ jobs:
           zwave-fan:
             - 'drivers/**/zwave-fan/**'
 
-  zwave-switch:
+  build_drivers:
     needs: paths-filter
     if: ${{ needs.paths-filter.outputs.zwave-switch == 'true' }}
-    uses: ./.github/workflows/publish-smartthings-driver.yml
-    with:
-      driver: drivers/SmartThings/zwave-switch
-      label: HomeSeer Z-Wave Switches
-      pkgkey: homeseer-zwave-switches
-      environment: ${{ github.base_ref || github.ref_name }}
-    secrets: inherit
-  zwave-fan:
-    needs: paths-filter
-    if: ${{ needs.paths-filter.outputs.zwave-fan == 'true' }}
-    uses: ./.github/workflows/publish-smartthings-driver.yml
-    with:
-      driver: drivers/SmartThings/zwave-fan
-      label: HomeSeer Z-Wave Fan Controller
-      pkgkey: homeseer-zwave-fan
-      environment: ${{ github.base_ref || github.ref_name }}
+    steps:
+      - name: "Build Driver Matrix"
+        uses: ./.github/workflows/build-matrix.yml
+        with:
+          # inputFile: '.github/workflows/matrix_includes.json' # Default input file path
+          filter: 'drivers[]'
+          # addInclude: true
+      - name: "Publish Driver"
+        uses: ./.github/workflows/publish-smartthings-driver.yml
+        with:
+          driver: ${{ matrix.path }}/${{ matrix.driver }}
+          label: ${{ matrix.label }}
+          pkgkey: ${{ matrix.pkgkey }}
+          environment: ${{ github.base_ref || github.ref_name }}
     secrets: inherit
