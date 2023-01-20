@@ -40,10 +40,9 @@ jobs:
           filters: |
             zwave-switch: 'drivers/**/zwave-switch/**'
             zwave-fan: 'drivers/**/zwave-fan/**'
-            - name: "Build Driver Matrix"
   
   build-matrix:
-    name: "Build Matrix"
+    name: "Build Driver Matrix"
     needs: parse-changes
     if: needs.parse-changes.outputs.drivers != '[]'
     runs-on: ubuntu-latest
@@ -61,7 +60,7 @@ jobs:
           filter: 'drivers[?contains(${{ needs.parse-changes.outputs.drivers }}, driver)]'
           # addInclude: true
 
-  build-drivers:
+  publish-drivers:
     name: "Publish Driver"
     needs: build-matrix
     if: needs.parse-changes.outputs.drivers != '[]'
