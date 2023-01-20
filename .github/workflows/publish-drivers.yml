@@ -48,7 +48,7 @@ jobs:
     uses: ./.github/workflows/build-matrix.yml
     with:
       # inputFile: '.github/workflows/matrix_includes.json' # Default input file path
-      filter: 'drivers[?contains(${{ needs.parse-changes.outputs.drivers }}, driver)]'
+      filter: 'drivers[?contains(`${{ needs.parse-changes.outputs.drivers }}`, driver)]'
       # addInclude: true
 
   publish-drivers:
