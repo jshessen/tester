@@ -56,4 +56,4 @@ jobs:
           label: ${{ matrix.label }}
           pkgkey: ${{ matrix.pkgkey }}
           environment: ${{ github.base_ref || github.ref_name }}
-    secrets: inherit
+        secrets: inherit
