@@ -36,6 +36,4 @@ jobs:
         uses: JoshuaTheMiller/conditional-build-matrix@main
         id: set-matrix
         with:          
-          inputFile: ${{ inputs.inputFile || ".github/workflows/matrix_includes.json" }}
-          filter: ${{ inputs.filter }}
-          addInclude: ${{ inputs.addInclude || "true" }}
+          ${{ inputs }}
