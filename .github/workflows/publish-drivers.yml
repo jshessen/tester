@@ -27,8 +27,27 @@ jobs:
       pull-requests: read
     # Set matched filters as job 'drivers' output variable
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
       drivers: ${{ steps.filter.outputs.changes }}
+    steps:
+      - name: "Fetching Repository Contents"
+        uses: actions/checkout@v3
+        id: checkout
+      - name: "Filter Paths"
+        uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            zwave-switch: 'drivers/**/zwave-switch/**'
+            zwave-fan: 'drivers/**/zwave-fan/**'
+            - name: "Build Driver Matrix"
+  
+  build-matrix:
+    needs: parse-changes
+    runs-on: ubuntu-latest
+    if: needs.parse-changes.outputs.drivers != '[]'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: "Fetching Repository Contents"
         uses: actions/checkout@v3
@@ -38,22 +57,14 @@ jobs:
         id: set-matrix
         with:
           # inputFile: '.github/workflows/matrix_includes.json' # Default input file path
-          filter: 'drivers[?contains(${{ drivers }}, driver)]'
+          filter: 'drivers[?contains(${{ needs.parse-changes.outputs.drivers }}, driver)]'
           # addInclude: true
-      - name: "Filter Paths"
-        uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            zwave-switch: 'drivers/**/zwave-switch/**'
-            zwave-fan: 'drivers/**/zwave-fan/**'
-            - name: "Build Driver Matrix"
 
-  build_drivers:
-    needs: parse-changes
+  build-drivers:
+    needs: build-matrix
     if: needs.parse-changes.outputs.drivers != '[]'
     strategy:
-      matrix: ${{fromJson(needs.parse-changes.outputs.drivers)}
+      matrix: ${{fromJson(needs.build-matrix.outputs.drivers)}
     runs-on: ubuntu-latest
     steps:
       - name: "Publish Driver"
