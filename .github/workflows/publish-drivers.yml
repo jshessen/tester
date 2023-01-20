@@ -19,35 +19,37 @@ on:
 #      - "drivers/**.lua"
 
 jobs:
-  paths-filter:
+  # Job to run change detection
+  parse-changes:
     runs-on: ubuntu-latest
     # Required permissions
     permissions:
       pull-requests: read
-    # Set job outputs to values from filter step
+    # Set matched filters as job 'drivers' output variable
     outputs:
-      zwave-switch: ${{ steps.filter.outputs.zwave-switch }}
-      zwave-fan: ${{ steps.filter.outputs.zwave-fan }}
+      drivers: ${{ steps.filter.outputs.changes }}
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v2
       id: filter
       with:
         filters: |
-          zwave-switch:
-            - 'drivers/**/zwave-switch/**'
-          zwave-fan:
-            - 'drivers/**/zwave-fan/**'
+          zwave-switch: 'drivers/**/zwave-switch/**'
+          zwave-fan: 'drivers/**/zwave-fan/**'
 
   build_drivers:
-    needs: paths-filter
-    if: ${{ needs.paths-filter.outputs.zwave-switch == 'true' }}
+    needs: parse-changes
+    if: needs.changes.outputs.drivers != '[]'
+    strategy:
+      matrix:
+        driver: ${{ fromJSON(needs.changes.outputs.drivers) }}
+    runs-on: ubuntu-latest
     steps:
       - name: "Build Driver Matrix"
         uses: ./.github/workflows/build-matrix.yml
         with:
           # inputFile: '.github/workflows/matrix_includes.json' # Default input file path
-          filter: 'drivers[]'
+          filter: 'drivers[?contains(${{ drivers }}, driver)]'
           # addInclude: true
       - name: "Publish Driver"
         uses: ./.github/workflows/publish-smartthings-driver.yml
