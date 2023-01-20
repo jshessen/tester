@@ -45,7 +45,6 @@ jobs:
     name: "Build Driver Matrix"
     needs: parse-changes
     if: needs.parse-changes.outputs.drivers != '[]'
-    name: "Configure Matrix"
     uses: ./.github/workflows/build-matrix.yml
     id: set-matrix
     with:
