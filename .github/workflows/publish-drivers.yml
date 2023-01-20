@@ -45,27 +45,20 @@ jobs:
     name: "Build Driver Matrix"
     needs: parse-changes
     if: needs.parse-changes.outputs.drivers != '[]'
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: "Fetching Repository Contents"
-        uses: actions/checkout@v3
-        id: checkout
-      - name: "Configure Matrix"
-        uses: ./.github/workflows/build-matrix.yml
-        id: set-matrix
-        with:
-          # inputFile: '.github/workflows/matrix_includes.json' # Default input file path
-          filter: 'drivers[?contains(${{ needs.parse-changes.outputs.drivers }}, driver)]'
-          # addInclude: true
+    name: "Configure Matrix"
+    uses: ./.github/workflows/build-matrix.yml
+    id: set-matrix
+    with:
+      # inputFile: '.github/workflows/matrix_includes.json' # Default input file path
+      filter: 'drivers[?contains(${{ needs.parse-changes.outputs.drivers }}, driver)]'
+      # addInclude: true
 
   publish-drivers:
     name: "Publish Driver"
     needs: build-matrix
-    if: needs.parse-changes.outputs.drivers != '[]'
+    if: needs.build-matrix.outputs.matrix != '[]'
     strategy:
-      matrix: ${{ fromJson(needs.build-matrix.outputs.drivers) }}
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
     uses: ./.github/workflows/publish-smartthings-driver.yml
     with:
       driver: ${{ matrix.driver }}

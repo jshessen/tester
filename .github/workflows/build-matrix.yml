@@ -17,6 +17,10 @@ on:
         required: false
         type: boolean
         default: true
+    outputs:
+      matrix:
+        description: "Return filtered matrix"
+        value: ${{ jobs.matrix_prep.outputs.matrix }}
 
 jobs:
   matrix_prep:
