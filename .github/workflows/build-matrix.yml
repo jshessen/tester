@@ -20,14 +20,17 @@ on:
 
 jobs:
   matrix_prep:
+    name: "Read/Parse Strategy Matrix"
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      # Required as the JSON input file needs to be read
-      - uses: actions/checkout@v2
-      - id: set-matrix
-        uses: JoshuaTheMiller/conditional-build-matrix@main        
+      - name: "Fetching Repository Contents"
+        uses: actions/checkout@v3
+        id: checkout
+      - name: "Parse inputFile"
+        uses: JoshuaTheMiller/conditional-build-matrix@main
+        id: set-matrix
         with:          
           inputFile: ${{ inputs.inputFile }}
           filter: ${{ inputs.filter || ".github/workflows/matrix_includes.json" }}
