@@ -33,7 +33,7 @@ jobs:
       - name: "Fetching Repository Contents"
         uses: actions/checkout@v3
         id: checkout
-      - name "Configure Matrix"
+      - name: "Configure Matrix"
         uses: ./.github/workflows/build-matrix.yml
         id: set-matrix
         with:
@@ -58,6 +58,7 @@ jobs:
     steps:
       - name: "Publish Driver"
         uses: ./.github/workflows/publish-smartthings-driver.yml
+        id: publish
         with:
           driver: ${{ matrix.driver }}
           label: ${{ matrix.label }}
