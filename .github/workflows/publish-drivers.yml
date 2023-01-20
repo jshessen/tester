@@ -67,9 +67,7 @@ jobs:
     if: needs.parse-changes.outputs.drivers != '[]'
     strategy:
       matrix: ${{ fromJson(needs.build-matrix.outputs.drivers) }}
-    name: "Publish Driver"
     uses: ./.github/workflows/publish-smartthings-driver.yml
-      id: publish
     with:
       driver: ${{ matrix.driver }}
       label: ${{ matrix.label }}
