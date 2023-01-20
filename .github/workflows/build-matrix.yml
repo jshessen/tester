@@ -38,4 +38,4 @@ jobs:
         with:          
           inputFile: ${{ inputs.inputFile || ".github/workflows/matrix_includes.json" }}
           filter: ${{ inputs.filter }}
-          addInclude: ${{ inputs.addInclude || true }}
+          addInclude: ${{ inputs.addInclude || "true" }}
