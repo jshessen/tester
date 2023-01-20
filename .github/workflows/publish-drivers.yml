@@ -21,6 +21,7 @@ on:
 jobs:
   # Job to run change detection
   parse-changes:
+    name: "Parse Push/Pull Changes"
     runs-on: ubuntu-latest
     # Required permissions
     permissions:
@@ -42,6 +43,7 @@ jobs:
             - name: "Build Driver Matrix"
   
   build-matrix:
+    name: "Build Matrix"
     needs: parse-changes
     if: needs.parse-changes.outputs.drivers != '[]'
     runs-on: ubuntu-latest
@@ -60,18 +62,17 @@ jobs:
           # addInclude: true
 
   build-drivers:
+    name: "Publish Driver"
     needs: build-matrix
     if: needs.parse-changes.outputs.drivers != '[]'
     strategy:
       matrix: ${{ fromJson(needs.build-matrix.outputs.drivers) }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Publish Driver"
-        uses: ./.github/workflows/publish-smartthings-driver.yml
-        id: publish
-        with:
-          driver: ${{ matrix.driver }}
-          label: ${{ matrix.label }}
-          pkgkey: ${{ matrix.pkgkey }}
-          environment: ${{ github.base_ref || github.ref_name }}
-        secrets: inherit
+    name: "Publish Driver"
+    uses: ./.github/workflows/publish-smartthings-driver.yml
+      id: publish
+    with:
+      driver: ${{ matrix.driver }}
+      label: ${{ matrix.label }}
+      pkgkey: ${{ matrix.pkgkey }}
+      environment: ${{ github.base_ref || github.ref_name }}
+    secrets: inherit
