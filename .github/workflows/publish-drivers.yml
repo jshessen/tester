@@ -43,7 +43,6 @@ jobs:
   
   build-matrix:
     needs: parse-changes
-    runs-on: ubuntu-latest
     if: needs.parse-changes.outputs.drivers != '[]'
     runs-on: ubuntu-latest
     outputs:
