@@ -7,7 +7,6 @@ on:
         description: "The file that contains the JSON configuration of the matrix includes elements. Must come after a Checkout."
         required: false
         type: string
-        default: ".github/workflows/matrix_includes.json"
       filter:
         description: "The JMESPath JSON query to apply to the input file."
         required: true
@@ -15,8 +14,7 @@ on:
       addInclude:
         description: "Wrap the output from the JSON query in an {include: ...} object."
         required: false
-        type: boolean
-        default: true
+        type: string
     outputs:
       matrix:
         description: "Return filtered matrix"
